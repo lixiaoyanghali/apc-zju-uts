@@ -49,7 +49,9 @@
 #include <pr_msgs/ObjectPose.h>
 #include <pr_msgs/ObjectPoseList.h>
 #include <pr_msgs/Enable.h>
-#include <cv_bridge/CvBridge.h>
+
+#include <cv_bridge/cv_bridge.h>
+#include <sensor_msgs/image_encodings.h>
 
 #include <moped.hpp>
 #include <boost/algorithm/string.hpp>
@@ -94,6 +96,7 @@ public:
     Enabled = 1;
 		ros::NodeHandle pnh("~");
 		string modelsPath;
+        // change the directory to the pre-build models
 		pnh.param("models_path", modelsPath, string("/pr/data/moped/regular_models") );
 
 		DIR *dp;
@@ -125,6 +128,9 @@ public:
     string inputImageTopicName;
     string outputObjectListTopicName;
     string EnableSrvName;
+
+    // change subscribed topics using a mono rgb image input
+    // the estimated poses will be published to /object_poses
     pnh.param("input_image_topic_name", inputImageTopicName, std::string("/Image"));
     pnh.param("output_object_list_topic_name", outputObjectListTopicName, std::string("/object_poses"));
     pnh.param("enable_service_name", EnableSrvName, std::string("/Enable"));
@@ -170,10 +176,16 @@ public:
 	void process( const sensor_msgs::ImageConstPtr& in ) {
 		
     if (Enabled){
-      sensor_msgs::CvBridge bridge;
-      
-      IplImage *gs = bridge.imgMsgToCv( in );
-    
+        // change CvBridge to cv_bridge
+        cv_bridge::CvImagePtr cv_ptr;
+        try {
+            cv_ptr = cv_bridge::toCvCopy( in, sensor_msgs::image_encodings::MONO8 );
+        }
+        catch ( cv_bridge::Exception & e ) {
+            ROS_ERROR( "cv_bridge exceptions: %s\n", e.what() );
+        }
+        IplImage * gs = new IplImage( cv_ptr->image );
+          
       vector<SP_Image> images;
       
       SP_Image mopedImage( new Image );

@@ -64,16 +64,16 @@ namespace MopedNS {
 		// FEAT_SIFT_GPU( string ScaleOrigin, string Verbosity, string GPUDisplay ) 
 		//pipeline.addAlg( "SIFT", new FEAT_SIFT_GPU("-1", "0", ":0.0") );
 
-#ifdef PERFORMANCE_TESTING_GPU 
-		pipeline.addAlg( "SIFT", new FEAT_SIFT_GPU("-1", "0", ":0.0") );
+//#ifdef PERFORMANCE_TESTING_GPU
+//		pipeline.addAlg( "SIFT", new FEAT_SIFT_GPU("-1", "0", ":0.0") );
 
-#else
-#ifdef PERFORMANCE_TESTING_CPU
+//#else
+//#ifdef PERFORMANCE_TESTING_CPU
 		pipeline.addAlg( "SIFT", new FEAT_SIFT_CPU("-1") );
-#else
-		pipeline.addAlg( "SIFT", new FEAT_SIFT_GPU("-1", "0", ":0.0") );
-#endif
-#endif
+//#else
+//		pipeline.addAlg( "SIFT", new FEAT_SIFT_GPU("-1", "0", ":0.0") );
+//#endif
+//#endif
 		// FEAT_SIFT_CPU( string ScaleOrigin ) 
 
 		
